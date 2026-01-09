@@ -355,24 +355,17 @@ pcan <- read_table("https://www.prdh.umontreal.ca/BDLC/data/ont/Population.txt",
 ```
 
 ```{r}
-joined <- dm |>
-  left_join(pcan, by = join_by(Year, Age))
-
-fwamr <- joined |>
+dm |>
+  left_join(pcan, by = join_by(Year, Age)) |>
   group_by(Year) |>
-  summarise(Female = weighted.mean(Female.x, Female.y))
-mwamr <- joined |>
-  group_by(Year) |>
-  summarise(Male = weighted.mean(Male.x, Male.y))
-
-left_join(fwamr, mwamr, by = join_by(Year)) |>
+  summarise(Female = weighted.mean(Female.x, Female.y),
+            Male = weighted.mean(Male.x, Male.y)) |>
   pivot_longer(cols = Female:Male,
                names_to = "Sex", values_to = "Weighted_Average_Mortality") |>
   ggplot(aes(x = Year, y = Weighted_Average_Mortality, color = Sex)) +
   geom_line() +
   scale_color_brewer(palette = "Set1") + 
-  theme_bw(base_size = 14) +
-  labs(y = "Weighted Average Mortality Rate")
+  theme_bw(base_size = 14)
 ```
 
 We notice that the population weighted average mortality rate is higher than the non-weighted average mortality rate, with a steeper decrease until the late 20th century, followed by a short period of increased mortality rates. 
